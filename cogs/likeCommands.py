@@ -152,7 +152,7 @@ class LikeCommands(commands.Cog):
                     else:
                         embed.description = "\n┌MAX LIKES\n└─This UID has already received the maximum likes today.\n"
 
-                    embed.set_footer(text="DEVELOPED BY SUMAN")
+                    embed.set_footer(text="DEVELOPED BY Userzzz")
                     embed.description += f"\nREMAINING: {remaining}"
                     await ctx.send(embed=embed, mention_author=True, ephemeral=is_slash)
 
