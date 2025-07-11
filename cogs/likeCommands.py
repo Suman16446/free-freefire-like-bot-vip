@@ -9,23 +9,19 @@ import asyncio
 from dotenv import load_dotenv
 
 load_dotenv()
-RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
+key = os.getenv("KEY")
+api_host = os.getenv("API_HOST")
 CONFIG_FILE = "like_channels.json"
 
 class LikeCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.api_host = "https://free-fire-like1.p.rapidapi.com"
+        self.api_host = api_host
         self.config_data = self.load_config()
         self.cooldowns = {}
         self.session = aiohttp.ClientSession()
 
-        self.headers = {}
-        if RAPIDAPI_KEY:
-            self.headers = {
-                'x-rapidapi-key': RAPIDAPI_KEY,
-                'x-rapidapi-host': "free-fire-like1.p.rapidapi.com"
-            }
+
 
     def load_config(self):
         default_config = {
@@ -112,12 +108,13 @@ class LikeCommands(commands.Cog):
 
         try:
             async with ctx.typing():
-                async with self.session.get(f"{self.api_host}/like?uid={uid}", headers=self.headers) as response:
+                async with self.session.get(f"{self.api_host}/like?uid={uid}&key={key}") as response:
                     if response.status == 404:
                         await self._send_player_not_found(ctx, uid)
                         return
-                    if response.status ==429 :
-                        await self._send_api_limit_reached
+                    if response.status == 429:
+                        await self._send_api_limit_reached(ctx)
+                        return
                     if response.status != 200:
                         print(f"API Error: {response.status} - {await response.text()}")
                         await self._send_api_error(ctx)
@@ -129,6 +126,17 @@ class LikeCommands(commands.Cog):
                         color=0x2ECC71 if data.get("status") == 1 else 0xE74C3C,
                         timestamp=datetime.now()
                     )
+                    
+                    key_details=data.get("api_key_details",{})
+                    current_usage = key_details.get("current_usage",{})
+                    usage_limit=key_details.get("usage_limit",{})
+                    
+                    if usage_limit != "null":
+                        remaining = f"{current_usage}/{usage_limit}"
+
+                    else:
+                        remaining = "UNLIMITED QUOTA"
+   
 
                     if data.get("status") == 1:
                         embed.description = (
@@ -145,7 +153,7 @@ class LikeCommands(commands.Cog):
                         embed.description = "\n┌MAX LIKES\n└─This UID has already received the maximum likes today.\n"
 
                     embed.set_footer(text="DEVELOPED BY SUMAN")
-                    embed.description += "\n🔗 JOIN : https://discord.gg/SmxFxCPA3t"
+                    embed.description += f"\nREMAINING: {remaining}"
                     await ctx.send(embed=embed, mention_author=True, ephemeral=is_slash)
 
         except asyncio.TimeoutError:
@@ -155,25 +163,22 @@ class LikeCommands(commands.Cog):
             await self._send_error_embed(ctx, "⚡ Critical Error", "An unexpected error occurred. Please try again later.", ephemeral=is_slash)
 
     async def _send_player_not_found(self, ctx, uid):
-        embed = discord.Embed(title="❌ Player Not Found", description=f"The UID {uid} does not exist or is not accessible.", color=0xE74C3C)
+        embed = discord.Embed(title="Player Not Found", description=f"The UID {uid} does not exist", color=0xE74C3C)
         embed.add_field(name="Tip", value="Make sure that:\n- The UID is correct\n- The player is not private", inline=False)
         await ctx.send(embed=embed, ephemeral=True)
         
     async def _send_api_limit_reached(self, ctx):
         embed = discord.Embed(
-            title="⚠️ API Rate Limit Reached",
-            description="You have reached the maximum number of requests allowed by the API.",
-            color=0xF1C40F  # jaune/orangé
+            title="Api Limit Reached",
+            description="Likes are temporarily disabled.",
+            color=0xF1C40F
         )
         embed.add_field(
-            name="Tip",
-            value=(
-                "- Wait a few minutes before trying again\n"
-                "- Consider upgrading your API plan if this happens often\n"
-                "- Avoid sending too many requests in a short time"
-            ),
+            name="Solution",
+            value="Please contact the developer.",
             inline=False
         )
+        embed.set_footer(text="Api key recharge required.")
         await ctx.send(embed=embed, ephemeral=True)
 
 
