@@ -148,7 +148,7 @@ class LikeCommands(commands.Cog):
                             f"   ├─ ADDED: +{data.get('likes_added', 0)}\n"
                             f"   ├─ BEFORE: {data.get('likes_before', 'N/A')}\n"
                             f"   └─ AFTER: {data.get('likes_after', 'N/A')}\n"
-                            f" https://discord.gg/SmxFxCPA3t"
+                            f" JOIN=https://discord.gg/SmxFxCPA3t"
                         )
                     else:
                         embed.description = "\n┌MAX LIKES\n└─This UID has already received the maximum likes today.\n"
