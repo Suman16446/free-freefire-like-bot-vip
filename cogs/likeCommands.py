@@ -164,9 +164,9 @@ class LikeCommands(commands.Cog):
                 f"MAX LIKES\nThis UID has already received the maximum likes today."
             )
 
-        embed.set_footer(text="DEVELOPED BY THUG")
+        embed.set_footer(text="DEVELOPED BY SUMAN")
         if ctx.guild and ctx.guild.id != 1363548112756539733:
-            embed.description += "\nJOIN : https://discord.gg/awPm5B3QFg"
+            embed.description += "\nJOIN : https://discord.gg/jBzE4FATuS"
 
         await ctx.send(embed=embed, ephemeral=ephemeral)
 
