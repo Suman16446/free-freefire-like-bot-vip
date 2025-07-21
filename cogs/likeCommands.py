@@ -119,7 +119,7 @@ class LikeCommands(commands.Cog):
 
         try:
             async with ctx.typing():
-                async with self.session.get(f"{self.api_url}/like?uid={uid}&region={region_server}&key=suman474", headers=self.headers) as resp:
+                async with self.session.get(f"{self.api_url}/like?uid={uid}&region={region_server}&key=suman474") as resp:
                     if resp.status == 404:
                         return await self._send_player_not_found(ctx, uid, ephemeral=is_slash)
                     elif resp.status != 200:
@@ -166,7 +166,7 @@ class LikeCommands(commands.Cog):
 
         embed.set_footer(text="DEVELOPED BY SUMAN")
         if ctx.guild and ctx.guild.id != 1363548112756539733:
-            embed.description += "\nJOIN : https://discord.gg/jBzE4FATuS"
+            embed.description += "\nJOIN : https://discord.gg/zSeyTEcwyc"
 
         await ctx.send(embed=embed, ephemeral=ephemeral)
 
